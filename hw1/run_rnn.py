@@ -44,94 +44,16 @@ map_phone_index = {}
 for i, token in zip(range(len(y_tokens)),y_tokens):
     map_phone_index[token] = i+1
 
-X_file = open(data_directory+"mfcc/train.ark")
-X_test_file = open(data_directory+"mfcc/test.ark")
-Y_file = open(data_directory+"label/train.lab")
-
-X = pd.DataFrame(columns=["Id","Feature"])
-Ids = []
-Features = []
-for line in X_file:
-    split = line.split(" ")
-    features = []
-    for feats in split[1:]:
-        features.append(feats)
-    features[-1] = features[-1][:-1]
-    Features.append(np.asarray(features,dtype=float))
-    Ids.append(split[0])
-X["Id"] = Ids
-X["Feature"] = Features
-
-Y = pd.DataFrame(columns=["Id","Phone"])
-Ids = []
-Phones = []
-for line in Y_file:
-    split = line.split(",")
-    Ids.append(split[0])
-    Phones.append(split[1][:-1])
-Y["Id"] = Ids
-Y["Phone"] = [map_39_phone[map_48_39[i]] for i in Phones] 
-
-Concat_XY = pd.merge(X, Y, on='Id')
-raw_features = list(Concat_XY["Feature"])
-raw_phones = list(Concat_XY["Phone"])
-raw_Ids = list(Concat_XY["Id"])
-
-Concat_frames = pd.DataFrame(columns=["Id","Sequence","Feature"])
-Exist_id = {}
-Ids = []
-for i in list(Concat_XY["Id"]):
-    Id = i[:i.rfind("_")] 
-    if Id not in Exist_id:
-        Ids.append(Id)
-        Exist_id[Id] = 1
-Concat_frames["Id"] = Ids
-Concat_frames["Sequence"] = ""
-Concat_frames["Feature"] = ""
-
-Concat_frames = Concat_frames.set_index("Id")
-
-
-for i, feat, phone in zip(raw_Ids,raw_features,raw_phones) :
-    Id = i[:i.rfind("_")]
-    row = Concat_frames.loc[Id] 
-    if row["Sequence"] == "":
-        row["Sequence"] = phone
-        row["Feature"] = feat
-        
-    else :
-        row["Sequence"] = str(row["Sequence"]+phone)
-        row["Feature"] = np.column_stack((row["Feature"],feat))
-
+MAX_SEQ = 777
 scaler = StandardScaler()
 
-X_train = list(Concat_frames['Feature'])
-MAX_SEQ = np.max(np.asarray([len(i[0]) for i in  X_train]))
-for i in range(len(X_train)):
-    shape = X_train[i].shape[1]
-    X_train[i] = scaler.fit_transform(X_train[i].transpose())
-    zeros = np.zeros((MAX_SEQ-shape,X_train[i].shape[1]))
-    X_train[i] = np.row_stack((X_train[i],zeros))
+X_test_file = open(data_directory+"mfcc/test.ark")
 
-X_train = np.asarray(X_train,dtype=float)
-
-Y_train = list(Concat_frames["Sequence"])
-for i in range(len(Y_train)):
-    Y_train[i] = [map_phone_index[j] for j in Y_train[i]]
-    Y_train[i] = utils.to_categorical(Y_train[i],num_classes=40)
-    shape = Y_train[i].shape[0]
-    zeros = np.zeros((MAX_SEQ-shape,40))
-    Y_train[i] = np.row_stack((Y_train[i],zeros))
-Y_train = np.asarray(Y_train,dtype=float)    
-
-X_train = X_train.reshape((X_train.shape[0],X_train.shape[1],X_train.shape[2]))
-x_train, x_test, y_train, y_test = train_test_split(X_train, Y_train, test_size=0.15, random_state=1)
-
-json_file = open('test.json', 'r')
+json_file = open('best_rnn.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 model = model_from_json(loaded_model_json)
-model.load_weights("test.hdf5")
+model.load_weights("best_rnn.hdf5")
 
 X_test_df = pd.DataFrame(columns=["Id","Feature"])
 Ids = []

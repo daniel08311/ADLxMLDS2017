@@ -49,12 +49,6 @@ scaler = StandardScaler()
 
 X_test_file = open(data_directory+"mfcc/test.ark")
 
-json_file = open('best_rnn.json', 'r')
-loaded_model_json = json_file.read()
-json_file.close()
-model = model_from_json(loaded_model_json)
-model.load_weights("best_rnn.hdf5")
-
 X_test_df = pd.DataFrame(columns=["Id","Feature"])
 Ids = []
 Features = []
@@ -99,10 +93,29 @@ for i in range(len(X_test)):
     
 X_test = np.asarray(X_test,dtype=float)
 
-result = model.predict_classes(X_test)
+json_file = open('best_rnn1.json', 'r')
+loaded_model_json = json_file.read()
+json_file.close()
+model = model_from_json(loaded_model_json)
+
+model.load_weights("best_rnn1.hdf5")
+
+json_file = open('best_rnn2.json', 'r')
+loaded_model_json = json_file.read()
+json_file.close()
+model2 = model_from_json(loaded_model_json)
+
+model2.load_weights("best_rnn2.hdf5")
+
+final = np.zeros((592,777,1))
+result = model.predict(X_test)
+result2 = model2.predict(X_test)
+for i in range(len(result2)):
+    for k in range(len(result2[i])):
+        final[i][k] = np.argmax((result[i][k] + result2[i][k])/2 )
 
 output = []
-for i in result:
+for i in final:
     string = "0"
     for j in i:
         for k,v in map_phone_index.items():

@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 run_cnn.py $1 $2
+python run_cnn.py $1 $2

@@ -15,6 +15,8 @@ import pickle
 import pandas as pd
 import numpy as np
 import sys
+K.set_image_dim_ordering("th") 
+K.set_image_data_format("channels_last")
 
 data_directory = sys.argv[1]
 output_fileName = sys.argv[2]
@@ -26,7 +28,7 @@ json_file = open('best_cnn.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 model = model_from_json(loaded_model_json)
-model.load_weights("best_cnn.hdf5")
+model.load_weights("best_cnn_tf.hdf5")
 
 map_48_39 = {}
 for line in file_48_39:
@@ -42,7 +44,6 @@ y_tokens = []
 for k,v in map_48_39.items():
     y_tokens.append(map_39_phone[v])
 y_tokens = list(sorted(set(y_tokens))) 
-
 
 map_phone_index = {}
 for i, token in zip(range(len(y_tokens)),y_tokens):

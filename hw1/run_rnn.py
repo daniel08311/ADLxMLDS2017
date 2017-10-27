@@ -107,12 +107,20 @@ model2 = model_from_json(loaded_model_json)
 
 model2.load_weights("best_rnn2.hdf5")
 
+json_file = open('LSTM.json', 'r')
+loaded_model_json = json_file.read()
+json_file.close()
+model3 = model_from_json(loaded_model_json)
+
+model3.load_weights("LSTM.hdf5")
+
 final = np.zeros((592,777,1))
 result = model.predict(X_test)
 result2 = model2.predict(X_test)
+result3 = model3.predict(X_test)
 for i in range(len(result2)):
     for k in range(len(result2[i])):
-        final[i][k] = np.argmax((result[i][k] + result2[i][k])/2 )
+        final[i][k] = np.argmax((result[i][k] + result2[i][k] + result3[i][k]) / 3)
 
 output = []
 for i in final:

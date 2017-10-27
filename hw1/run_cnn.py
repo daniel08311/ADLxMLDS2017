@@ -16,13 +16,11 @@ import pandas as pd
 import numpy as np
 import sys
 
-K.set_image_dim_ordering("th") 
-K.set_image_data_format("channels_last")
-
 data_directory = sys.argv[1]
 output_fileName = sys.argv[2]
 
-X_test_file = open(data_directory+"mfcc/test.ark")
+file_48_39 = open(data_directory+"phones/48_39.map")
+file_39_phone = open(data_directory+"48phone_char.map")
 
 json_file = open('best_cnn.json', 'r')
 loaded_model_json = json_file.read()
@@ -30,8 +28,30 @@ json_file.close()
 model = model_from_json(loaded_model_json)
 model.load_weights("best_cnn.hdf5")
 
-scaler = StandardScaler()
+map_48_39 = {}
+for line in file_48_39:
+    mapping = line.split("\t")
+    map_48_39[mapping[0]] = mapping[1][:-1] 
+
+map_39_phone = {}
+for line in file_39_phone:
+    mapping = line.split("\t")
+    map_39_phone[mapping[0]] = mapping[2][:-1] 
+
+y_tokens = []
+for k,v in map_48_39.items():
+    y_tokens.append(map_39_phone[v])
+y_tokens = list(sorted(set(y_tokens))) 
+
+
+map_phone_index = {}
+for i, token in zip(range(len(y_tokens)),y_tokens):
+    map_phone_index[token] = i+1
+
 MAX_SEQ = 777
+scaler = StandardScaler()
+
+X_test_file = open(data_directory+"mfcc/test.ark")
 
 X_test_df = pd.DataFrame(columns=["Id","Feature"])
 Ids = []
@@ -85,6 +105,7 @@ for i in range(len(X_test)):
             X_test[i][k] = np.column_stack((np.column_stack((temp[k-1],temp[k])),temp[k+1]))
             
 X_test = np.asarray(X_test,dtype=float)
+X_test = X_test.reshape((X_test.shape[0],X_test.shape[1],X_test.shape[2],X_test.shape[3],1))
 
 result = model.predict_classes(X_test)
 

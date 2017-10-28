@@ -30,7 +30,7 @@ import pandas as pd
 import numpy as np
 X_file = open(data_directory+"mfcc/train.ark")
 X_test_file = open(data_directory+"mfcc/test.ark")
-Y_file = open(data_directory+"train.lab")
+Y_file = open(data_directory+"label/train.lab")
 
 X = pd.DataFrame(columns=["Id","Feature"])
 Ids = []
@@ -112,7 +112,7 @@ X_train = list(Concat_frames['Feature'])
 MAX_SEQ = np.max(np.asarray([len(i[0]) for i in  X_train]))
 for i in range(len(X_train)):
     shape = X_train[i].shape[1]
-    zeros = np.zeros((MAX_SEQ-shape,X_train[i].shape[1]))
+    zeros = np.zeros((MAX_SEQ-shape,X_train[i].shape[0]))
     X_train[i] = scaler.fit_transform(X_train[i].transpose())
     X_train[i] = np.row_stack((X_train[i],zeros))
     temp = X_train[i]
@@ -203,7 +203,7 @@ for i in range(len(X_test)):
     X_test[i] = scaler.fit_transform(X_test[i].transpose())
     X_test[i] = np.row_stack((X_test[i],zeros))
     temp = X_test[i]
-    X_train[i] = np.zeros((X_test[i].shape[0],X_test[i].shape[1],3))
+    X_test[i] = np.zeros((X_test[i].shape[0],X_test[i].shape[1],3))
     for k in range(len(temp)):
         if k == 0:
             X_test[i][k] = np.column_stack((np.column_stack((temp[k],temp[k])),temp[k+1]))
@@ -213,6 +213,7 @@ for i in range(len(X_test)):
             X_test[i][k] = np.column_stack((np.column_stack((temp[k-1],temp[k])),temp[k+1]))
             
 X_test = np.asarray(X_test,dtype=float)
+X_test = X_test.reshape((X_test.shape[0],X_test.shape[1],X_test.shape[2],X_test.shape[3],1))
 
 result = model.predict_classes(X_test)
 

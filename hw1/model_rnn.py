@@ -32,7 +32,7 @@ import pandas as pd
 import numpy as np
 X_file = open(data_directory+"mfcc/train.ark")
 X_test_file = open(data_directory+"mfcc/test.ark")
-Y_file = open(data_directory+"train.lab")
+Y_file = open(data_directory+"label/train.lab")
 
 X = pd.DataFrame(columns=["Id","Feature"])
 Ids = []

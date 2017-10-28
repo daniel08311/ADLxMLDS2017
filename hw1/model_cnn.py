@@ -142,6 +142,7 @@ x_train, x_test, y_train, y_test = train_test_split(X_train, Y_train, test_size=
 
 model = Sequential()
 model.add(TimeDistributed(Convolution2D(16,(3,3)),input_shape=(X_train.shape[1],X_train.shape[2],X_train.shape[3],X_train.shape[4])))
+model.add(Dropout(0.5))
 model.add(TimeDistributed(Flatten()))
 model.add(Bidirectional(GRU(512, return_sequences=True, dropout=0.5, recurrent_dropout=0.5)))
 model.add(Bidirectional(GRU(256, return_sequences=True, dropout=0.5, recurrent_dropout=0.5)))
@@ -168,6 +169,7 @@ for line in X_test_file:
     split = line.split(" ")
     features = []
     for feats in split[1:]:
+
         features.append(feats)
     features[-1] = features[-1][:-1]
     Features.append(np.asarray(features,dtype=float))

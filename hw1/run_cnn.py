@@ -28,7 +28,7 @@ json_file = open('best_cnn.json', 'r')
 loaded_model_json = json_file.read()
 json_file.close()
 model = model_from_json(loaded_model_json)
-model.load_weights("best_cnn_tf.hdf5")
+model.load_weights("best_cnn.hdf5")
 
 map_48_39 = {}
 for line in file_48_39:

@@ -1,5 +1,10 @@
-file_48_39 = open("48_39.map")
-file_39_phone = open("48phone_char.map")
+import sys
+
+data_directory = sys.argv[1]
+outputfileName = sys.argv[2]
+
+file_48_39 = open(data_directory+"phones/48_39.map")
+file_39_phone = open(data_directory+"48phone_char.map")
 
 map_48_39 = {}
 for line in file_48_39:
@@ -23,9 +28,9 @@ for i, token in zip(range(len(y_tokens)),y_tokens):
 
 import pandas as pd
 import numpy as np
-X_file = open("mfcc/train.ark")
-X_test_file = open("mfcc/test.ark")
-Y_file = open("train.lab")
+X_file = open(data_directory+"mfcc/train.ark")
+X_test_file = open(data_directory+"mfcc/test.ark")
+Y_file = open(data_directory+"train.lab")
 
 X = pd.DataFrame(columns=["Id","Feature"])
 Ids = []
@@ -252,7 +257,7 @@ for i,j in zip(list(X_test_df["Id"]),X_test_phone):
 
 X_test_df_concat = X_test_df_concat.reset_index(level=['Id'])
 
-output_file = open("test.csv",'w')
+output_file = open(outputfileName,'w')
 output_file.write("id,phone_sequence\n")
 for i, j in zip(list(X_test_df_concat["Id"]),testing):
     output_file.write(i+","+j+"\n")

@@ -74,16 +74,11 @@ def decode_sequence(input_seq,model):
 Test_Data = pd.DataFrame(columns=['Id', 'Features'])
 json_data = open(os.path.join(DIRECTORY, 'testing_label.json')).read()
 test_labels = json.loads(json_data)
-load_Test_Dataframe(Test_Data, test_labels,os.path.join(DIRECTORY, 'testing_data\\feat\\'))
+load_Test_Dataframe(Test_Data, test_labels,os.path.join(DIRECTORY, 'testing_data/feat/'))
 
 
-from keras.models import model_from_json
-json_file = open('model_special.json', 'r')
-loaded_model_json = json_file.read()
-json_file.close()
-loaded_model = model_from_json(loaded_model_json)
-loaded_model.load_weights('model_special.h5')
-
+from keras.models import model_from_json, load_model
+loaded_model = load_model("special_mission.h5")
 
 with open('tokenizer_special.pickle', 'rb') as handle:
     tokenizer = pickle.load(handle)
@@ -115,5 +110,4 @@ for i,c in zip(decoded_sentence[0],X_test_id):
                     if k not in existed:
                         s += k + " "
         out.write(s+"\n")
-        print(s)
 out.close()

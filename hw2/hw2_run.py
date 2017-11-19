@@ -56,7 +56,7 @@ def load_Peer_Dataframe(df, peer_id, feature_direc):
     df["Id"] = peer_id
     df["Features"] = Features
 
-def decode_sequence(input_seq):
+def decode_sequence(input_seq,model):
  
     target_seq = np.zeros((len(input_seq), 1))
     target_seq[:, 0] = tokenizer.word_index['bos']
@@ -94,7 +94,7 @@ Peer_Data = pd.DataFrame(columns=['Id', 'Features'])
 peer_id_file = open(os.path.join(DIRECTORY, 'peer_review_id.txt'))
 peer_ids = []
 for i in peer_id_file:
-    peer_ids.append(i)
+    peer_ids.append(i[:-1])
 load_Peer_Dataframe(Peer_Data, peer_ids, os.path.join(DIRECTORY, 'peer_review/feat/'))
 
 from keras.models import model_from_json, load_model
@@ -132,7 +132,6 @@ out.close()
 Peer_test = np.asarray(list(Peer_Data['Features']))
 Peer_test = np.asarray(Peer_test)
 Peer_test_id = list(Peer_Data['Id'])
-
 seq_index = 0
 decoded_sentence = []
 decoded_sentence.append(decode_sequence(Peer_test,loaded_model))

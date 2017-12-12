@@ -16,7 +16,6 @@ class Agent_PG(Agent):
         Initialize every things you need here.
         For example: building your model
         """
-        self.state_size = 80*80
         self.action_size = 3
         self.gamma = 0.99
         self.learning_rate = 0.001
@@ -28,13 +27,10 @@ class Agent_PG(Agent):
         self.model.summary()
         self.record = deque(maxlen=30)
         self.prev_state = None
-        #elf.csv = open("pong_baseline_2.csv",'a')
         super(Agent_PG,self).__init__(env)
 
         if args.test_pg:
             self.model = load_model('pong.h5')
-            print('loading trained model')
-
 
     def init_game_setting(self):
         pass
@@ -67,13 +63,6 @@ class Agent_PG(Agent):
         self.states.append(state)
         self.rewards.append(reward)
         # self.memory.append((state, gradient, aprob, reward))
-
-    def act(self, state):
-        state = np.expand_dims(state,axis=0)
-        aprob = self.model.predict(state, batch_size=1).flatten()
-        self.probs.append(aprob)
-        action = np.random.choice(self.action_size, 1, p=aprob)[0]
-        return action, aprob
 
     def discount_rewards(self, rewards):
         discounted_rewards = np.zeros_like(rewards)

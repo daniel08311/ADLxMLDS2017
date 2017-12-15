@@ -35,16 +35,15 @@ class Agent_DQN(Agent):
                 self.session.run(self.graph_ops["reset_target_network_params"])
 
     def build_network(self, num_actions, w, h, c):
-        with tf.device("/gpu:0"):
-            state = tf.placeholder("float", [None, w, h, c])
-            inputs = Input(shape=(w, h, c))
-            model = Convolution2D(32, (3,3), activation='relu', padding='same')(inputs)
-            model = MaxPool2D((2,2))(model)
-            model = Convolution2D(64, (3,3), activation='relu', padding='same')(model)
-            model = MaxPool2D((2,2))(model)
-            model = Flatten()(model)
-            model = Dense(512, activation='relu')(model)
-            q_values = Dense(num_actions, activation='linear')(model)
+	    state = tf.placeholder("float", [None, w, h, c])
+	    inputs = Input(shape=(w, h, c))
+	    model = Convolution2D(32, (3,3), activation='relu', padding='same')(inputs)
+	    model = MaxPool2D((2,2))(model)
+	    model = Convolution2D(64, (3,3), activation='relu', padding='same')(model)
+	    model = MaxPool2D((2,2))(model)
+	    model = Flatten()(model)
+	    model = Dense(512, activation='relu')(model)
+	    q_values = Dense(num_actions, activation='linear')(model)
             m = Model(inputs, q_values)
         return state, m
 

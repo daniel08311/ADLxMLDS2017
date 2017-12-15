@@ -12,10 +12,8 @@ import random
 import time
 class Agent_PG(Agent):
     def __init__(self, env, args):
-        """
-        Initialize every things you need here.
-        For example: building your model
-        """
+
+        self.state_size = 80*80
         self.action_size = 3
         self.gamma = 0.99
         self.learning_rate = 0.001
@@ -23,24 +21,27 @@ class Agent_PG(Agent):
         self.gradients = []
         self.rewards = []
         self.probs = []
-        self.model = self._build_model()
-        self.model.summary()
+        #self.model = self._build_model()
         self.record = deque(maxlen=30)
         self.prev_state = None
+        #elf.csv = open("pong_baseline_2.csv",'a')
         super(Agent_PG,self).__init__(env)
 
-        if args.test_pg:
-            self.model = load_model('pong.h5')
+        #if args.test_pg:
+        self.model = load_model('pong_test.h5')
+        self.model.summary()
+
 
     def init_game_setting(self):
         pass
 
     def _build_model(self):
         model = Sequential()
-        model.add(Convolution2D(32, 6, 6, subsample=(3, 3), input_shape=(80,80,1), border_mode='same',activation='relu', init='he_uniform'))
+        model.add(Convolution2D(32, (5, 5), subsample=(2,2), input_shape=(80,80,1),activation='relu', kernel_initializer='he_uniform'))
+        # model.add(Convolution2D(32, (6, 6), activation='relu', kernel_initializer='he_uniform'))
         model.add(Flatten())
-        model.add(Dense(64, activation='relu', init='he_uniform'))
-        model.add(Dense(32, activation='relu', init='he_uniform'))
+        model.add(Dense(64, activation='relu', kernel_initializer='he_uniform'))
+        model.add(Dense(32, activation='relu', kernel_initializer='he_uniform'))
         model.add(Dense(self.action_size, activation='softmax'))
         opt = Adam(lr=self.learning_rate)
         model.compile(loss='categorical_crossentropy', optimizer=opt)
@@ -63,6 +64,13 @@ class Agent_PG(Agent):
         self.states.append(state)
         self.rewards.append(reward)
         # self.memory.append((state, gradient, aprob, reward))
+
+    def act(self, state):
+        state = np.expand_dims(state,axis=0)
+        aprob = self.model.predict(state, batch_size=1).flatten()
+        self.probs.append(aprob)
+        action = np.random.choice(self.action_size, 1, p=aprob)[0]
+        return action, aprob
 
     def discount_rewards(self, rewards):
         discounted_rewards = np.zeros_like(rewards)
@@ -108,10 +116,9 @@ class Agent_PG(Agent):
                 state = env.reset()
                 self.prev_state = None
                 if episode > 1 and episode % 20 == 0:
-                    self.model.save('pong.h5')
+                    self.model.save('pong_test.h5')
 
         pass
-
 
     def make_action(self, state, test=True):
         if test :
@@ -121,7 +128,7 @@ class Agent_PG(Agent):
             state = np.expand_dims(x,axis=0)
             aprob = self.model.predict(state, batch_size=1).flatten()
             action = np.random.choice(self.action_size, 1, p=aprob)[0]
-            return action
+            return action+1
         else:
             state = np.expand_dims(state,axis=0)
             aprob = self.model.predict(state, batch_size=1).flatten()

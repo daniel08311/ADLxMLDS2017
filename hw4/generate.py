@@ -53,7 +53,7 @@ with open("eye.pkl", "rb") as input_file:
 with open("hair.pkl", "rb") as input_file:
     hair_dict = pickle.load(input_file)
 
-noise_shape = (1,1,100)
+noise_shape = (1,1,100) 
 test = open(sys.argv[1],'r')
 if not os.path.exists("samples/"):
     os.mkdir("samples/")

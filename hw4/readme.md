@@ -1,0 +1,1 @@
+我的sample圖片是在ubuntu 16.04環境下跑的<br>用windows環境會跑出不同的結果

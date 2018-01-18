@@ -15,7 +15,6 @@ python partition_trainData.py images/路徑<br>
 此步驟要耗時比較久，約十分鐘，目的在把traininig image做preprocess後存成.npy檔，以加快訓練時讀檔速度<br><br>
 最後執行train.py<br>
 python train.py<br><br>
-
 (3)如何跑 testing<br>
 執行python test.py即可
    

@@ -30,7 +30,6 @@ from keras.models import model_from_json, load_model
 from keras.preprocessing.image import ImageDataGenerator
 from keras.utils import np_utils
 from keras.constraints import maxnorm
-from sklearn.cross_validation import StratifiedKFold
 from keras.layers import Dropout
 
 
@@ -49,7 +48,7 @@ model.summary()
 x_test = np.load('valid_multi.npy').astype(float)
 x_test = np.stack((x_test,)*3,axis=-1)
 x_test/=255.0
-for k in range(1):
+for k in range(10):
     for i in range(6):
         x_img = np.load('train_multi_'+str(i)+'.npy').astype(float)
         x_img = np.stack((x_img,)*3,axis=-1)

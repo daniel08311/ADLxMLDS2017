@@ -12,7 +12,7 @@
     python preprocessing.py Data_Entry_2017_v2路徑 train.txt路徑 valid.txt路徑<br><br> 
     接下來執行partition_trainData.py，arguments為htc提供之x光照片資料夾路徑<br> 
     python partition_trainData.py images/路徑<br>
-    此步驟要耗時比較久，約五至十分鐘，目的在把traininig image做preprocess後存成.npy檔，以加快訓練時讀檔速度<br><br>
+    此步驟要耗時比較久，約十分鐘，目的在把traininig image做preprocess後存成.npy檔，以加快訓練時讀檔速度<br><br>
     最後執行train.py<br>
     python train.py<br><br>
 
